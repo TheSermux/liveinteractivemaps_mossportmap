@@ -1,0 +1,2 @@
+geojson==2.5.0
+turfpy==0.0.7
