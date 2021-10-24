@@ -125,7 +125,7 @@ def get_facilities_and_analytics(db,id_fac:int=None,name:str=None,id_av_list:lis
         fac['zones'] = zones
 
     dist_sport_types = get_reference_data_dict(db,REF_SPORT_TYPE,list(id_st_set))
-    sum_zone_area_per_person_m2 = 0
+    sum_zone_area_per_100k = 0
 
     # определяем плотность населения (используем до 5 объектов, проходимся по всем районам)
     population_density = AVG_MOSCOW_POPULATION_DENSITY
@@ -137,7 +137,7 @@ def get_facilities_and_analytics(db,id_fac:int=None,name:str=None,id_av_list:lis
             break
 
     if is_polygon_given and polygon_area_km2 != 0:
-        sum_zone_area_per_person_m2 = sum_zone_area_m2 / (polygon_area_km2 * population_density)
+        sum_zone_area_per_100k = sum_zone_area_m2 / (polygon_area_km2 * population_density * 100000)
     
     # считаем количество зон по видам
     cursor.execute(f"select z.id_zt, max(z.type) as type, count(*) as cnt from zones_tbl z where z.id_fac in({list_to_string(id_fac_list_internal)}) group by z.id_zt order by 3 desc")
@@ -145,7 +145,7 @@ def get_facilities_and_analytics(db,id_fac:int=None,name:str=None,id_av_list:lis
 
     analytics = {
         'sum_zone_area_m2': sum_zone_area_m2,
-        'sum_zone_area_per_person_m2': sum_zone_area_per_person_m2,
+        'sum_zone_area_per_100k': sum_zone_area_per_100k,
         'dist_sport_types': dist_sport_types,
         'count_zones': count_zones,
         'zone_type_count': zone_type_count
